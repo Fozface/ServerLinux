@@ -8,16 +8,11 @@
 
 #include "helper.h"
 
-int checkWrite(int wr, char from[]) {
-  if (wr == -1) {
-    perror(from);
-    return 1;
-  }
-  return 0;
+int checkWrite(int wr, char *from)
+{
+	if (wr == -1) {
+		perror(from);
+		return 1;
+	}
+	return 0;
 }
-
-
-
-
-
-
