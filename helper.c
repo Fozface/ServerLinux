@@ -15,3 +15,5 @@ int checkWrite(int wr, char from[]) {
   }
   return 0;
 }
+
+
