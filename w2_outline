@@ -1,0 +1,45 @@
+Week 2: tempmon
+
+Goal: a multi-file C project built with a Makefile, with argument parsing, text-to-number conversion, and a first session in gdb.
+
+Required behaviour
+
+./tempmon <count> prints the temperature count times, one second apart, then exits 0.
+Each line of output is in degrees with one decimal place, like 27.8 C.
+Missing or invalid arguments print a usage message to stderr and exit 1.
+
+Structure
+
+sensor.c and sensor.h: one function that reads the sensor and returns the value in millidegrees as a number, with 0 or -1 as its return code.
+main.c: argument parsing, the loop, and the output.
+Makefile: targets all and clean, using -Wall -Wextra -Werror -g.
+
+Constraints, with reasons
+
+Raw system calls for file I/O. Same reason as week 1: you're practising the kernel interface. snprintf for formatting is allowed.
+Open the file once, before the loop. Real monitoring code doesn't reopen a file every sample. Your second read will misbehave, and working out why is part of the exercise. Start with man 2 lseek.
+No floating point. Get 27.8 from 27800 with integer maths. Many embedded targets have no FPU, so this is a standard skill.
+Convert with strtol, not atoi. atoi can't report errors. See man 3 strtol.
+The Makefile must compile each .c to a .o separately. That's what lets make rebuild only what changed.
+
+Acceptance tests
+
+make builds with no warnings, and running make again reports nothing to do.
+touch sensor.c; make recompiles only sensor.c and relinks.
+./tempmon 3; echo $? prints three lines one second apart, then 0.
+./tempmon; echo $? prints the usage message, then 1.
+./tempmon abc; echo $? prints an error, then 1.
+./tempmon 3 > out.txt; wc -l out.txt reports 3.
+make clean removes the binary and all .o files.
+
+gdb task
+
+Run gdb ./tempmon, set a breakpoint on your sensor function, run with an argument, and step through it. Print the buffer and the byte count after the read, and show a backtrace. The commands you need are break, run, next, print, bt, and continue.
+
+Submit
+
+cat of all four files.
+The output of tests 1 to 7.
+The pasted gdb session.
+
+References: the introduction chapter of the GNU Make manual, plus the man pages for lseek, strtol, and sleep.
