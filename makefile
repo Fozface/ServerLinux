@@ -5,9 +5,9 @@ CFLAGS = -Wall -Werror -Wextra -g
 all : tempmon
 tempmon : $(OBJ)
 	cc $(CFLAGS) -o tempmon $(OBJ)
-main.o : main.c sensor.o helper.o
+main.o : main.c sensor.h helper.h
 	cc $(CFLAGS) -c main.c
-sensor.o : sensor.c sensor.h
+sensor.o : sensor.c sensor.h helper.h
 	cc $(CFLAGS) -c sensor.c
 helper.o : helper.c helper.h
 	cc $(CFLAGS) -c helper.c

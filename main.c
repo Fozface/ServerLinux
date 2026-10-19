@@ -9,90 +9,86 @@
 #include "helper.h"
 #include "sensor.h"
 
-int main(int argc, char *argv[]) {
-  int chk = 0;
-  int fd;
-  // gets the file descriptorfile descriptor, which is a small,
-  //  non-negative integer used in subsequent I/O operations
+/*returning 1 should be done frome main, that indicate my function failed.
+ * return -1 comes from system functions  */
+int main(int argc, char *argv[])
+{
+	int wr, bytes, chk, setStart, pr, tempInt, tempDec;
 
-  if (argc != 2) {
-    errno = EINVAL;
-    perror("invalid argument for main");
+	long temp = 0;
+	long count;
+
+	char *endptr = 0;
+	char output[10];
+
+	if (argc != 2) {
+		errno = EINVAL;
+		perror("main requires a int to run\n");
+		return 1;
+	}
+	// if here = ;endptr doesnt = null then something other than a number
+	// was entered, if  argc != 2 then no arg was entered or more than 1 arg
+	// was entered, the file name is always arg 0. if endptr == argv[1] no
+	// conversion was done by strtol
+	errno = 0;
+	count = strtol(argv[1], &endptr, 10);
+	if (!(*endptr == '\0') || (endptr == argv[1]) || (count < 0) ||
+	    (errno != 0)) {
+		errno = (errno == 0) ? EINVAL : errno;
+		perror("invalid argument for main");
+		return 1;
+	}
+
+	if (openTemp() != 0) {
+		char tempCallEr[] = "openTemp call failed\n";
+		wr = write(STDERR_FILENO, tempCallEr, sizeof(tempCallEr) - 1);
+		chk = checkWrite(wr, "openTemp\n");
     return 1;
-  }
-  char *endptr = 0;
-  // if here = ;endptr doesnt = null then something other than a number
-  // was entered, if  argc != 2 then no arg was entered or more than 1 arg
-  // was entered, the file name is always arg 0. if endptr == argv[1] no
-  // conversion was done by strtol
-  errno = 0;
-  long count = strtol(argv[1], &endptr, 10);
-  if (!(*endptr == '\0') || (endptr == argv[1]) || (count < 0) ||
-      (errno != 0)) {
-    errno = (errno == 0) ? EINVAL : errno;
-    perror("invalid argument for main");
-    return 1;
-  }
-  long temp = 0;
-  int bytes = 0;
-  if (openTemp(&fd) != 0) {
-    char tempCallError[] = "openTemp call failed\n";
-    chk = checkWrite(
-        write(STDERR_FILENO, tempCallError, sizeof(tempCallError) - 1),
-        "openTemp");
-    if (chk == 1) {
-      close(fd);
-      return 1;
-    }
-  }
-  for (int i = 0; i < count; i++) {
-    int rd = readTemp(&temp, &bytes);
-    if (rd == -1) {
-      close(fd);
-      return 1;
-    }
-    char output[10];
-    if (bytes >= 9) {
-      char outputbufferror[] = "read more bytes than output can handle\n";
-      chk = checkWrite(
-          write(STDERR_FILENO, outputbufferror, sizeof(outputbufferror) - 1),
-          "bufSize");
-      if (chk == 1) {
-        close(fd);
-        return 1;
-      }
-    }
+	}
+	for (int i = 0; i < count; i++) {
+		if (readTemp(&temp, &bytes)) {
+			return 1;
+		}
 
-    int tempCwhole = ((temp + 50) / 1000);
-    int tempCdec = ((temp + 50) / 100) % 10;
-    int pr = snprintf(output, bytes + 2, "%d.%d C\n", tempCwhole, tempCdec);
-    if (pr < 0) {
-      perror("snprintf error of output");
-      close(fd);
-      return 1;
-    }
-    chk = checkWrite(write(STDOUT_FILENO, output, pr), "printOut");
-    if (chk == 1) {
-      close(fd);
-      return 1;
-    }
+		if (bytes >= (int)sizeof(output)) {
+			char outbuff[] = "read bytes > output size\n";
+			wr = write(STDERR_FILENO, outbuff, sizeof(outbuff) - 1);
+			chk = checkWrite(wr, "bufSize\n");
+			if (chk == 1) {
+				closeTemp();
+				return 1;
+			}
+			closeTemp();
+			return 1;
+		}
+		tempInt = ((temp + 50) / 1000);
+		tempDec = ((temp + 50) / 100) % 10;
 
-    off_t ls = lseek(fd, 0, SEEK_SET);
-    if (ls == -1) {
-      close(fd);
-      perror("lseek error");
-      return 1;
-    } else if (ls != 0) {
-      char lseekError[] = "lseek did not return to 0";
-      chk = checkWrite(write(STDOUT_FILENO, lseekError, sizeof(lseekError) - 1),
-                       "lseek");
-      if (chk == 1) {
-        close(fd);
-        return 1;
-      }
-    }
-    sleep(1);
-  }
-  close(fd);
-  return 0;
+		pr = snprintf(output, sizeof(output), "%d.%d C\n", tempInt, tempDec);
+
+		if (pr >= (int)sizeof(output)) {
+      pr = sizeof(output) - 1;
+			char snpErr[] = "\nsnprintf truncated output\n";
+			wr = write(STDERR_FILENO, snpErr, sizeof(snpErr) - 1);
+			chk = checkWrite(wr, "snprtf\n");
+			if (chk == 1) {
+				closeTemp();
+				return 1;
+			}
+		}
+		wr = write(STDOUT_FILENO, output, pr);
+		chk = checkWrite(wr, "printOut\n");
+		if (chk == 1) {
+			closeTemp();
+			return 1;
+		}
+
+		setStart = setReadStart(0);
+		if (setStart != 0) {
+			return 1;
+		}
+		sleep(1);
+	}
+	closeTemp();
+	return 0;
 }
