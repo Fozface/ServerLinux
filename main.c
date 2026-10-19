@@ -11,6 +11,7 @@
 
 int main(int argc, char *argv[]) {
   int chk = 0;
+  int fd;
   // gets the file descriptorfile descriptor, which is a small,
   //  non-negative integer used in subsequent I/O operations
 
