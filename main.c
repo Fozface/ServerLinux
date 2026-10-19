@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
   // was entered, if  argc != 2 then no arg was entered or more than 1 arg
   // was entered, the file name is always arg 0. if endptr == argv[1] no
   // conversion was done by strtol
+  errno = 0;
   long count = strtol(argv[1], &endptr, 10);
   if (!(*endptr == '\0') || (endptr == argv[1]) || (count < 0) ||
       (errno != 0)) {
@@ -32,15 +33,16 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   long temp = 0;
-  int fd;
   int bytes = 0;
   if (openTemp(&fd) != 0) {
     char tempCallError[] = "openTemp call failed\n";
     chk = checkWrite(
         write(STDERR_FILENO, tempCallError, sizeof(tempCallError) - 1),
         "openTemp");
-    if (chk == 1)
+    if (chk == 1) {
+      close(fd);
       return 1;
+    }
   }
   for (int i = 0; i < count; i++) {
     int rd = readTemp(&temp, &bytes);
@@ -54,15 +56,18 @@ int main(int argc, char *argv[]) {
       chk = checkWrite(
           write(STDERR_FILENO, outputbufferror, sizeof(outputbufferror) - 1),
           "bufSize");
-      if (chk == 1)
+      if (chk == 1) {
+        close(fd);
         return 1;
+      }
     }
 
-    int tempCwhole = (temp / 1000);
+    int tempCwhole = ((temp + 50) / 1000);
     int tempCdec = ((temp + 50) / 100) % 10;
-    int pr = snprintf(output, (bytes + 2), "%d.%d C\n", tempCwhole, tempCdec);
+    int pr = snprintf(output, bytes + 2, "%d.%d C\n", tempCwhole, tempCdec);
     if (pr < 0) {
       perror("snprintf error of output");
+      close(fd);
       return 1;
     }
     chk = checkWrite(write(STDOUT_FILENO, output, pr), "printOut");
@@ -70,16 +75,20 @@ int main(int argc, char *argv[]) {
       close(fd);
       return 1;
     }
-    int ls = lseek(fd, 0, SEEK_SET);
+
+    off_t ls = lseek(fd, 0, SEEK_SET);
     if (ls == -1) {
+      close(fd);
       perror("lseek error");
       return 1;
     } else if (ls != 0) {
       char lseekError[] = "lseek did not return to 0";
       chk = checkWrite(write(STDOUT_FILENO, lseekError, sizeof(lseekError) - 1),
                        "lseek");
-      if (chk == 1)
+      if (chk == 1) {
+        close(fd);
         return 1;
+      }
     }
     sleep(1);
   }
