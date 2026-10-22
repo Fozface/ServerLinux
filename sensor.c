@@ -68,7 +68,7 @@ int readTemp(long *tempL, int *rd)
 		    "didnt reach end of string or nothing valid to convert\n";
 
 		wr = write(STDERR_FILENO, strtlEr, sizeof(strtlEr) - 1);
-		checkWrite(wr, "strtol\n");
+		checkWrite(wr, "strtol");
 		closeTemp();
 		return 1;
 	}
@@ -100,7 +100,7 @@ int setReadStart(int start)
 		char lseekEr[] = "lseek did not return to 0\n";
 
 		wr = write(STDERR_FILENO, lseekEr, sizeof(lseekEr) - 1);
-		chk = checkWrite(wr, "lseek\n");
+		chk = checkWrite(wr, "lseek");
 		if (chk == 1) {
 			closeTemp();
 			return 1;

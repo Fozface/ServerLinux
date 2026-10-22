@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
 	if (argc != 2) {
 		errno = EINVAL;
-		perror("main requires a int to run\n");
+		perror("main requires a int to run");
 		return 1;
 	}
 	// if here = ;endptr doesnt = null then something other than a number
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	if (openTemp() != 0) {
 		char tempCallEr[] = "openTemp call failed\n";
 		wr = write(STDERR_FILENO, tempCallEr, sizeof(tempCallEr) - 1);
-		chk = checkWrite(wr, "openTemp\n");
+		chk = checkWrite(wr, "openTemp");
     return 1;
 	}
 	for (int i = 0; i < count; i++) {
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		if (bytes >= (int)sizeof(output)) {
 			char outbuff[] = "read bytes > output size\n";
 			wr = write(STDERR_FILENO, outbuff, sizeof(outbuff) - 1);
-			chk = checkWrite(wr, "bufSize\n");
+			chk = checkWrite(wr, "bufSize");
 			if (chk == 1) {
 				closeTemp();
 				return 1;
@@ -70,14 +70,14 @@ int main(int argc, char *argv[])
       pr = sizeof(output) - 1;
 			char snpErr[] = "\nsnprintf truncated output\n";
 			wr = write(STDERR_FILENO, snpErr, sizeof(snpErr) - 1);
-			chk = checkWrite(wr, "snprtf\n");
+			chk = checkWrite(wr, "snprtf");
 			if (chk == 1) {
 				closeTemp();
 				return 1;
 			}
 		}
 		wr = write(STDOUT_FILENO, output, pr);
-		chk = checkWrite(wr, "printOut\n");
+		chk = checkWrite(wr, "printOut");
 		if (chk == 1) {
 			closeTemp();
 			return 1;
