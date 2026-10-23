@@ -46,6 +46,7 @@ int readTemp(long *tempL, int *rd)
 		}
 		return -1;
 	}
+	//read() trys to read (sizeof(buffer)-1) bytes from the open file at file descriptor FD, and returns the number of bytes read,  
 	RD = read(FD, buffer, sizeof(buffer) - 1);
 	if (RD == -1) {
 		closeTemp();
@@ -65,13 +66,16 @@ int readTemp(long *tempL, int *rd)
 	// convert
 	if (!(*endarr == '\n') || (endarr == buffer)) {
 		static char strtlEr[] =
-		    "didnt reach end of string or nothing valid to convert\n";
-
+		"didnt reach end of string or nothing valid to convert\n";
 		wr = write(STDERR_FILENO, strtlEr, sizeof(strtlEr) - 1);
 		checkWrite(wr, "strtol");
 		closeTemp();
 		return 1;
 	}
+	if (RD < sizeof(buffer)){
+		buffer[RD] = '\0';
+	}
+	
 	// if (RD == sizeof(buffer) - 1) {
 	// 	char buferror[] = "\nthe buffer may be to small\n";
 	// 	WR = write(STDERR_FILENO, buferror, sizeof(buferror) - 1);
