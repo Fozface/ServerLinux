@@ -36,8 +36,7 @@ int readTemp(long *tempL, int *rd)
 	// static int chk;
 
 	char buffer[8];
-	buffer[7] = '\0';
-
+	
 	if (FD == -1) {
 		char readError[] = "no file was opened\n";
 		WR = write(STDERR_FILENO, readError, sizeof(readError) - 1);
@@ -55,6 +54,7 @@ int readTemp(long *tempL, int *rd)
 		perror("read error in readTemp");
 		return -1;
 	}
+	buffer[RD] = '\0';
 	char *endarr = 0;
 	errno = 0;
 	*tempL = strtol(buffer, &endarr, 10);
@@ -74,17 +74,6 @@ int readTemp(long *tempL, int *rd)
 		closeTemp();
 		return 1;
 	}
-
-
-	// if (RD == sizeof(buffer) - 1) {
-	// 	char buferror[] = "\nthe buffer may be to small\n";
-	// 	WR = write(STDERR_FILENO, buferror, sizeof(buferror) - 1);
-	// 	chk = checkWrite(wr, "bufferEr\n");
-	// 	if (chk == 1) {
-	// 		closeTemp();
-	// 		return 1;
-	// 	}
-	// }
 	*rd = RD;
 
 	return 0;
