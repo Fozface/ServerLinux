@@ -16,8 +16,8 @@ static int RD = -1;
 int openTemp()
 {
 
-	// /sys/class/thermal/thermal_zone0/temp
-	FD = open("/build/learn/w2/test.txt", O_RDONLY);
+	// /build/learn/w2/test.txt
+	FD = open("/sys/class/thermal/thermal_zone0/temp", O_RDONLY);
 	if (FD == -1) {
 		perror("open error in openTemp()");
 		return -1;
