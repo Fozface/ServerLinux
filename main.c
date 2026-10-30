@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		char tempCallEr[] = "openTemp call failed\n";
 		wr = write(STDERR_FILENO, tempCallEr, sizeof(tempCallEr) - 1);
 		chk = checkWrite(wr, "openTemp");
-    return 1;
+		return 1;
 	}
 	for (int i = 0; i < count; i++) {
 		if (readTemp(&temp, &bytes)) {
@@ -64,10 +64,11 @@ int main(int argc, char *argv[])
 		tempInt = ((temp + 50) / 1000);
 		tempDec = ((temp + 50) / 100) % 10;
 
-		pr = snprintf(output, sizeof(output), "%d.%d C\n", tempInt, tempDec);
+		pr = snprintf(output, sizeof(output), "%d.%d C\n", tempInt,
+			      tempDec);
 
 		if (pr >= (int)sizeof(output)) {
-      pr = sizeof(output) - 1;
+			pr = sizeof(output) - 1;
 			char snpErr[] = "\nsnprintf truncated output\n";
 			wr = write(STDERR_FILENO, snpErr, sizeof(snpErr) - 1);
 			chk = checkWrite(wr, "snprtf");
