@@ -36,7 +36,7 @@ int readTemp(long *tempL, int *rd)
 	// static int chk;
 
 	char buffer[8];
-	
+
 	if (FD == -1) {
 		char readError[] = "no file was opened\n";
 		WR = write(STDERR_FILENO, readError, sizeof(readError) - 1);
@@ -66,7 +66,7 @@ int readTemp(long *tempL, int *rd)
 	}
 	// if it didnt reached the end of a string or there was nothing valid to
 	// convert
-	if (!(*endarr == '\n') || (endarr == buffer)) {
+	if ((*endarr != '\n') || (endarr == buffer)) {
 		static char strtlEr[] =
 		    "didnt reach end of string or nothing valid to convert\n";
 		wr = write(STDERR_FILENO, strtlEr, sizeof(strtlEr) - 1);

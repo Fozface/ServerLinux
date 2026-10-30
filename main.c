@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
 	char *endptr = 0;
 	char output[10];
+	char sign;
 
 	if (argc != 2) {
 		errno = EINVAL;
@@ -61,11 +62,16 @@ int main(int argc, char *argv[])
 			closeTemp();
 			return 1;
 		}
+		if (temp < 0) {
+			temp *= -1;
+			sign = '-';
+		} else {
+			sign = '+';
+		}
 		tempInt = ((temp + 50) / 1000);
 		tempDec = ((temp + 50) / 100) % 10;
-
-		pr = snprintf(output, sizeof(output), "%d.%d C\n", tempInt,
-			      tempDec);
+		pr = snprintf(output, sizeof(output), "%c%d.%d C\n", sign,
+			      tempInt, tempDec);
 
 		if (pr >= (int)sizeof(output)) {
 			pr = sizeof(output) - 1;
