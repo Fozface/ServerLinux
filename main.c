@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
 
 	char *endptr = 0;
 	char output[10];
-	char sign[1];
+	char sign[2];
+	sign[1] = '\0';
 
 	if (argc != 2) {
 		errno = EINVAL;
