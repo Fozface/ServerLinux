@@ -2,3 +2,5 @@
 tempmon
 *.swp
 .vscode
+compile_commands.json
+
