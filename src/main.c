@@ -21,7 +21,9 @@ int main(int argc, char *argv[]) {
   char output[10];
   char sign[2];
   sign[1] = '\0';
-
+long num, sec, zone;
+  char out[10];
+int OP = parseOp(argc, *argv, &num, &sec, *out, &zone);
   if (argc != 2) {
     errno = EINVAL;
     perror("main requires a int to run");
