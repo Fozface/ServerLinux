@@ -23,7 +23,12 @@ int main(int argc, char *argv[]) {
   sign[1] = '\0';
 long num, sec, zone;
   char out[10];
-int OP = parseOp(argc, *argv, &num, &sec, *out, &zone);
+  out[0] = '.';
+int OP = parseOp(argc, argv, &num, &sec, *out, &zone);
+  if(OP){
+
+return 1;
+  }
   if (argc != 2) {
     errno = EINVAL;
     perror("main requires a int to run");
