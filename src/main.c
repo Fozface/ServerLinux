@@ -21,13 +21,12 @@ int main(int argc, char *argv[]) {
   char output[10];
   char sign[2];
   sign[1] = '\0';
-long num, sec, zone;
-  char out[10];
-  out[0] = '.';
-int OP = parseOp(argc, argv, &num, &sec, *out, &zone);
-  if(OP){
+  long num, sec, zone;
+  char out = 0;
+  int OP = parseOp(argc, argv, &num, &sec, &out, &zone);
+  if (OP) {
 
-return 1;
+    return 1;
   }
   if (argc != 2) {
     errno = EINVAL;

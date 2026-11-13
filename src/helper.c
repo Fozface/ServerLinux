@@ -16,7 +16,8 @@ int checkWrite(int wr, char *from) {
   return 0;
 }
 
-int parseOp(int argc, char *argv[], long *num, long *sec, char out, long *zone) {
+int parseOp(int argc, char *argv[], long *num, long *sec, char *out,
+            long *zone) {
   int flags, op = 0;
   num = 0;
   sec = 0;
@@ -29,7 +30,7 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char out, long *zone) 
       // number of times to run tempmon
       errno = 0;
       *num = strtol(optarg, &endptr, 10);
-      if (!(*endptr == '\0') || (endptr == argv[1]) || (num < 0) ||
+      if (!(*endptr == '\0') || (endptr == argv[1]) || (*num < 0) ||
           (errno != 0)) {
         errno = (errno == 0) ? EINVAL : errno;
         perror("invalid argument for main");
@@ -39,8 +40,8 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char out, long *zone) 
       break;
 
     case 'i':
-        // seconds between readings, min is 1, 
-    errno = 0;
+      // seconds between readings, min is 1,
+      errno = 0;
       *sec = strtol(optarg, &endptr, 10);
       if (!(*endptr == '\0') || (endptr == argv[1]) || (*sec < 1) ||
           (errno != 0)) {
@@ -48,15 +49,26 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char out, long *zone) 
         perror("invalid argument for main");
         return 1;
       }
-
-
-
       break;
+
     case 'o':
+      // make out point to the address of the output argument
+      *out = *optarg;
       break;
+
     case 'z':
+      errno = 0;
+      *sec = strtol(optarg, &endptr, 10);
+      if (!(*endptr == '\0') || (endptr == argv[1]) || (*sec < 0) ||
+          (errno != 0)) {
+        errno = (errno == 0) ? EINVAL : errno;
+        perror("invalid argument for main");
+        return 1;
+      }
       break;
+
     case 'h':
+
       break;
     default:
       break;
