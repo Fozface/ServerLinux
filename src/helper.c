@@ -20,7 +20,7 @@ int checkWrite(int wr, char *from) {
   return 0;
 }
 
-int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone) {
+int parseOp(int argc, char *argv[], long *num, long *sec, char **out, long *zone) {
   int exitVal = 0, op = 0;
   *num = 0;
   *sec = 1;
@@ -36,7 +36,7 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone)
       if (!(*endptr == '\0') || (endptr == argv[1]) || (*num < 0) ||
           (errno != 0)) {
         errno = (errno == 0) ? EINVAL : errno;
-        perror("invalid argument for main");
+        perror("strtol error in num parse");
         return 1;
       }
 
@@ -47,16 +47,16 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone)
     errno = 0;
       *sec = strtol(optarg, &endptr, 10);
       if (!(*endptr == '\0') || (endptr == argv[1]) || (*sec < 1) ||
-          (errno != 0)) {
+          (errno != 0) || (*sec > 3600)) {
         errno = (errno == 0) ? EINVAL : errno;
-        perror("invalid argument for main");
+        perror("invalid sec value, must be 0-3600");
         return 1;
       }
         break;
 
     case 'o':
         //make out point to the address of the output argument
-        *out = optarg[0];
+        *out = optarg;
        break;
 
     case 'z':
@@ -65,7 +65,7 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone)
       if (!(*endptr == '\0') || (endptr == argv[1]) || (*zone < 0) ||
           (errno != 0)) {
         errno = (errno == 0) ? EINVAL : errno;
-        perror("invalid argument for main");
+        perror("strtol zone error");
         return 1;
       }
         break;

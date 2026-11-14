@@ -22,8 +22,8 @@ int main(int argc, char *argv[]) {
   char sign[2];
   sign[1] = '\0';
   long num, sec, zone;
-  char out = 0;
-  int OP = parseOp(argc, argv, &num, &sec, &out, &zone);
+  char *out = 0;
+  int OP = parseOp(argc, argv, &num, &sec, &*out, &zone);
   if (OP) {
 
     return 1;

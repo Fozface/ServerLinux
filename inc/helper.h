@@ -3,6 +3,6 @@
 
 int checkWrite(int, char[]);
 
-int parseOp(int, char *[], long *, long *, char *, long *);
+int parseOp(int, char *[], long *, long *, char **, long *);
 
 #endif
