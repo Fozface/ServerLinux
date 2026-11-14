@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   sign[1] = '\0';
   long num, sec, zone;
   char *out = 0;
-  int OP = parseOp(argc, argv, &num, &sec, &*out, &zone);
+  int OP = parseOp(argc, argv, &num, &sec, &out, &zone);
   if (OP) {
 
     return 1;
