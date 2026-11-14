@@ -22,7 +22,7 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone)
   *sec = 1;
   char *endptr;
 
-  while ((op = getopt(argc, argv, "niozh")) != -1) {
+  while ((op = getopt(argc, argv, "n:i:o:z:h")) != -1) {
 
     switch (op) {
     case 'n':
@@ -52,7 +52,7 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone)
 
     case 'o':
         //make out point to the address of the output argument
-        *out = *optarg;
+        *out = optarg[0];
        break;
 
     case 'z':
