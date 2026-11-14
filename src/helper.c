@@ -8,6 +8,10 @@
 
 #include "helper.h"
 
+#define NOARGS 1
+#define HELP 2
+
+
 int checkWrite(int wr, char *from) {
   if (wr == -1) {
     perror(from);
@@ -67,9 +71,10 @@ int parseOp(int argc, char *argv[], long *num, long *sec, char *out, long *zone)
         break;
 
     case 'h':
-       exitVal = 2; 
+       exitVal = HELP; 
       break;
     default:
+       exitVal = NOARGS; 
       break;
     }
   }
